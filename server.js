@@ -2,7 +2,7 @@
 
 // BASE SETUP
 // =============================================================================
- var Bear     = require('./app/models/kali');
+ var Kali     = require('./app/models/kali');
  
 var mongoose   = require('mongoose');
 mongoose.connect('mongodb://hgiagiamou:Gate7!@ds063909.mongolab.com:63909/kalidb'); // connect to our database
