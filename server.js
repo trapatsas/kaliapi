@@ -17,8 +17,9 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || 80; 		// set our port
-app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
+//  Get the environment variables we need.
+var ipaddr  = process.env.OPENSHIFT_NODEJS_IP;
+var port    = process.env.OPENSHIFT_NODEJS_PORT || 8080;
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -70,7 +71,36 @@ router.route('/kali')
 // all of our routes will be prefixed with /api
 app.use('/', router); //app.use('/api', router);
 
+
+
+if (typeof ipaddr === "undefined") {
+   console.warn('No OPENSHIFT_NODEJS_IP environment variable');
+}
+
+//  terminator === the termination handler.
+function terminator(sig) {
+   if (typeof sig === "string") {
+      console.log('%s: Received %s - terminating Node server ...',
+                  Date(Date.now()), sig);
+      process.exit(1);
+   }
+   console.log('%s: Node server stopped.', Date(Date.now()) );
+}
+
+//  Process on exit and signals.
+process.on('exit', function() { terminator(); });
+
+['SIGHUP', 'SIGINT', 'SIGQUIT', 'SIGILL', 'SIGTRAP', 'SIGABRT', 'SIGBUS',
+ 'SIGFPE', 'SIGUSR1', 'SIGSEGV', 'SIGUSR2', 'SIGPIPE', 'SIGTERM'
+].forEach(function(element, index, array) {
+    process.on(element, function() { terminator(element); });
+});
+
+
 // START THE SERVER
 // =============================================================================
-app.listen(port);
-console.log('Magic happens on port ' + port);
+//  And start the app on that interface (and port).
+app.listen(port, ipaddr, function() {
+   console.log('%s: Node server started on %s:%d ...', Date(Date.now() ),
+               ipaddr, port);
+});
