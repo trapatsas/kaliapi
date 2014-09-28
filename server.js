@@ -17,8 +17,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//var port = process.env.PORT || 80; 		// set our port
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || 80); 
+var port = process.env.OPENSHIFT_NODEJS_PORT || 80; 		// set our port
 app.set('ipaddr', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 // ROUTES FOR OUR API
