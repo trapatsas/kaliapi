@@ -46,8 +46,9 @@ router.route('/kali')
 	.post(function(req, res) {
 		
 		var kali = new Kali(); 		// create a new instance of the kali model
-		kali.ip = req.body.ip;  // set the kalis name (comes from the request)
-		console.dir(req);
+		//kali.ip = req.body.ip;  // set the kalis name (comes from the request)
+		var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		kali.ip = ip;
 		kali.time = now;
 
 		// save the bear and check for errors
