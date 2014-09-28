@@ -2,10 +2,10 @@
 
 // BASE SETUP
 // =============================================================================
- var Kali     = require('./app/models/kali');
- 
+var Kali     = require('./app/models/kali');
+var now;
 var mongoose   = require('mongoose');
-mongoose.connect('mongodb://hgiagiamou:Gate7!@ds063909.mongolab.com:63909/kalidb'); // connect to our database
+mongoose.connect('mongodb://hgiagiamou:Gate7!@ds052827.mongolab.com:52827/kalidb'); // connect to our database
 
 // call the packages we need
 var express    = require('express'); 		// call express
@@ -17,7 +17,7 @@ var bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-var port = process.env.PORT || 8080; 		// set our port
+var port = process.env.PORT || 80; 		// set our port
 
 // ROUTES FOR OUR API
 // =============================================================================
@@ -26,7 +26,7 @@ var router = express.Router(); 				// get an instance of the express Router
 // middleware to use for all requests
 router.use(function(req, res, next) {
 	// do logging
-	var now = new Date();
+	now = new Date();
 	next(); // make sure we go to the next routes and don't stop here
 });
 
@@ -44,7 +44,9 @@ router.route('/kali')
 	.post(function(req, res) {
 		
 		var kali = new Kali(); 		// create a new instance of the kali model
-		kali.name = req.body.name;  // set the kalis name (comes from the request)
+		kali.ip = req.body.ip;  // set the kalis name (comes from the request)
+		console.dir(req);
+		kali.time = now;
 
 		// save the bear and check for errors
 		kali.save(function(err) {
@@ -54,10 +56,18 @@ router.route('/kali')
 			res.json({ message: 'Kali created!' });
 		});
 		
-	});
+	})	// get all the bears (accessed at GET http://localhost:8080/api/kali)
+	.get(function(req, res) {
+		Kali.find(function(err, kalis) {
+			if (err)
+				res.send(err);
+
+			res.json(kalis);
+		});
+	});;
 // REGISTER OUR ROUTES -------------------------------
 // all of our routes will be prefixed with /api
-app.use('/api', router);
+app.use('/', router); //app.use('/api', router);
 
 // START THE SERVER
 // =============================================================================

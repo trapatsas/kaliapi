@@ -4,7 +4,8 @@ var mongoose     = require('mongoose');
 var Schema       = mongoose.Schema;
 
 var KaliSchema   = new Schema({
-	name: String
+	ip: String,
+	time: Date
 });
 
 module.exports = mongoose.model('Kali', KaliSchema);
